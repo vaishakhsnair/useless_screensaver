@@ -314,10 +314,10 @@ export default function Home() {
           <button 
           onClick={() => setCaptureVideo(true)}
           className="bg-black border-2 px-6 py-3 rounded-lg font-bold transform transition-transform duration-200 hover:scale-105 active:scale-95 shadow-lg"
-          style={buttonStyle}
         >
           Open Webcam
         </button>
+        
         )}
       </div>
 
@@ -351,12 +351,15 @@ export default function Home() {
           />
 
 
-      <div className="text-2xl italic fixed bottom-10 left-4">
+<div className="text-2xl font-bold text-green-500 fixed inset-0 flex items-center justify-center">
+  {
+    !alwaysTouchCorners 
+      ? "Eyes on me? NO CORNERS FOR YOU ;)" 
+      : "No eyes on me?  Time for the corners !!!"
+  }
+</div>
 
-       {
-        !alwaysTouchCorners ? " I will not go to the Corners IF your are looking" : "No one's looking ? imma go to a corner"
-       }
-      </div>
+
     
 
       <div
