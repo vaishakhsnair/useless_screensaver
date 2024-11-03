@@ -1,25 +1,24 @@
 <img width="1280" alt="readme-banner" src="https://github.com/user-attachments/assets/35332e92-44cb-425b-9dff-27bcf1023c6c">
 
-# [Project Name] 🎯
+# The Useless Screen Saver🎯
 
 
 ## Basic Details
-### Team Name: [Name]
+### Team Name: Two grit
 
 
 ### Team Members
-- Team Lead: [Name] - [College]
-- Member 2: [Name] - [College]
-- Member 3: [Name] - [College]
+- Team Lead: Muhammed Faiz - MITS
+- Member 2: Vaishakh S Nair - MITS
 
 ### Project Description
-[2-3 lines about what your project does]
+The annoying screen saver that nobody asked for
 
 ### The Problem (that doesn't exist)
-[What ridiculous problem are you solving?]
+Ever felt like screen savers were way too satisfying
 
 ### The Solution (that nobody asked for)
-[How are you solving it? Keep it fun!]
+The iconic DVD Screen saver ,but it only touches the corners when nobody's looking.
 
 ## Technical Details
 ### Technologies/Components Used
@@ -28,11 +27,6 @@ For Software:
 - [Frameworks used]
 - [Libraries used]
 - [Tools used]
-
-For Hardware:
-- [List main components]
-- [List specifications]
-- [List tools required]
 
 ### Implementation
 For Software:
@@ -59,24 +53,6 @@ For Software:
 ![Workflow](Add your workflow/architecture diagram here)
 *Add caption explaining your workflow*
 
-For Hardware:
-
-# Schematic & Circuit
-![Circuit](Add your circuit diagram here)
-*Add caption explaining connections*
-
-![Schematic](Add your schematic diagram here)
-*Add caption explaining the schematic*
-
-# Build Photos
-![Components](Add photo of your components here)
-*List out all components shown*
-
-![Build](Add photos of build process here)
-*Explain the build steps*
-
-![Final](Add photo of final product here)
-*Explain the final build*
 
 ### Project Demo
 # Video
@@ -89,7 +65,6 @@ For Hardware:
 ## Team Contributions
 - [Name 1]: [Specific contributions]
 - [Name 2]: [Specific contributions]
-- [Name 3]: [Specific contributions]
 
 ---
 Made with ❤️ at TinkerHub Useless Projects 
