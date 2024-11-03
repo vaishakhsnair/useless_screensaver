@@ -12,6 +12,7 @@ export default function Home() {
   const positionRef = useRef({ x: 100, y: 100 });
   const speedRef = useRef({ x: 5, y: 5 });
   const targetCornerRef = useRef(null);
+  const cooldownRef = useRef(Date.now());
   const [imageStyle, setImageStyle] = useState({ filter: "invert(1)" });
   const baseSpeed = 5;
 
@@ -81,6 +82,15 @@ export default function Home() {
   };
 
   const toggleCornerMode = () => {
+    const now = Date.now();
+    const cooldownPeriod = 2000; // 2 seconds
+
+    if (now - cooldownRef.current < cooldownPeriod) {
+      return; // Exit if still within cooldown period
+    }
+    
+    cooldownRef.current = now; // Reset cooldown timer
+
     const newMode = !alwaysTouchCorners;
     setAlwaysTouchCorners(newMode);
     setButtonStyle({ filter: getRandomColorFilter() });
@@ -112,8 +122,22 @@ export default function Home() {
         y: positionRef.current.y + speedRef.current.y
       };
 
+
+
       if (alwaysTouchCorners) {
-        // Only check for corner collisions in corner mode
+
+        // Check if the next position is outside the boundaries of the screen
+        if (nextPosition.x <= 0 || nextPosition.x >= screenWidth - imageWidth) {
+          speedRef.current.x = -speedRef.current.x;
+          nextPosition.x = Math.max(0, Math.min(screenWidth - imageWidth, nextPosition.x));
+        }
+
+        if (nextPosition.y <= 0 || nextPosition.y >= screenHeight - imageHeight) {
+          speedRef.current.y = -speedRef.current.y;
+          nextPosition.y = Math.max(0, Math.min(screenHeight - imageHeight, nextPosition.y));
+        }
+
+        
         if (targetCornerRef.current && hasReachedCorner(nextPosition, targetCornerRef.current)) {
           setImageStyle({ filter: getRandomColorFilter() });
           const nextCorner = findNextCorner(targetCornerRef.current);
@@ -121,7 +145,6 @@ export default function Home() {
           speedRef.current = calculateVelocityToCorner(nextPosition, nextCorner);
         }
       } else {
-        // Edge bouncing behavior only in edge mode
         let colorChange = false;
         
         if (nextPosition.x <= 0 || nextPosition.x >= screenWidth - imageWidth) {
@@ -139,7 +162,6 @@ export default function Home() {
         }
       }
 
-      // Ensure the logo stays within bounds regardless of mode
       nextPosition.x = Math.max(0, Math.min(screenWidth - imageWidth, nextPosition.x));
       nextPosition.y = Math.max(0, Math.min(screenHeight - imageHeight, nextPosition.y));
 
