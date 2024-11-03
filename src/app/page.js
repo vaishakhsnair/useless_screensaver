@@ -1,11 +1,12 @@
 "use client";
 
+import { useEffect, useState, useRef } from "react";
+import * as faceapi from 'face-api.js';
 import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
 import { Color, Solver } from "../utils/Color";
 
 export default function Home() {
-  const [, setTick] = useState(0);
+  const [tick, setTick] = useState(0);
   const [alwaysTouchCorners, setAlwaysTouchCorners] = useState(false);
   const [buttonStyle, setButtonStyle] = useState({ filter: "invert(1)" });
   
@@ -21,6 +22,35 @@ export default function Home() {
   const [imageWidth, setImageWidth] = useState(200);
   const [imageHeight, setImageHeight] = useState(100);
 
+  // Face Detection States
+  const [captureVideo, setCaptureVideo] = useState(false);
+  const [modelsLoaded, setModelsLoaded] = useState(false);
+  const [face,setHasFace] = useState(false)
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const videoContainerRef = useRef(null);
+  const videoHeight = 480;
+  const videoWidth = 640;
+
+
+  useEffect(() => {
+    if (!face && !alwaysTouchCorners) {
+      const nearestCorner = findNearestCorner(positionRef.current);
+      targetCornerRef.current = nearestCorner;
+      speedRef.current = calculateVelocityToCorner(positionRef.current, nearestCorner);
+      setAlwaysTouchCorners(true); // Switch to corner-only mode if no face detected
+      setButtonStyle({ filter: getRandomColorFilter() });
+    } else if (face && alwaysTouchCorners) {
+      speedRef.current = { x: baseSpeed, y: baseSpeed };
+
+      setAlwaysTouchCorners(false); // Reset to normal mode if a face is detected
+    }
+  }, [face, alwaysTouchCorners]);
+
+
+
+  
+  // DVD Logo Functions
   const getCorners = () => ({
     bottomLeft: { x: 0, y: 0 },
     bottomRight: { x: screenWidth - imageWidth, y: 0 },
@@ -85,11 +115,15 @@ export default function Home() {
     const now = Date.now();
     const cooldownPeriod = 2000; // 2 seconds
 
+
+
     if (now - cooldownRef.current < cooldownPeriod) {
-      return; // Exit if still within cooldown period
+      return;
     }
     
-    cooldownRef.current = now; // Reset cooldown timer
+    
+
+    cooldownRef.current = now;
 
     const newMode = !alwaysTouchCorners;
     setAlwaysTouchCorners(newMode);
@@ -104,6 +138,7 @@ export default function Home() {
     }
   };
 
+  // Screen size effect
   useEffect(() => {
     const updateScreenSize = () => {
       setScreenHeight(window.innerHeight);
@@ -115,6 +150,7 @@ export default function Home() {
     return () => window.removeEventListener("resize", updateScreenSize);
   }, []);
 
+  // DVD Logo animation effect
   useEffect(() => {
     const interval = setInterval(() => {
       let nextPosition = {
@@ -122,11 +158,7 @@ export default function Home() {
         y: positionRef.current.y + speedRef.current.y
       };
 
-
-
       if (alwaysTouchCorners) {
-
-        // Check if the next position is outside the boundaries of the screen
         if (nextPosition.x <= 0 || nextPosition.x >= screenWidth - imageWidth) {
           speedRef.current.x = -speedRef.current.x;
           nextPosition.x = Math.max(0, Math.min(screenWidth - imageWidth, nextPosition.x));
@@ -137,7 +169,6 @@ export default function Home() {
           nextPosition.y = Math.max(0, Math.min(screenHeight - imageHeight, nextPosition.y));
         }
 
-        
         if (targetCornerRef.current && hasReachedCorner(nextPosition, targetCornerRef.current)) {
           setImageStyle({ filter: getRandomColorFilter() });
           const nextCorner = findNextCorner(targetCornerRef.current);
@@ -172,16 +203,162 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [screenWidth, screenHeight, alwaysTouchCorners]);
 
+  // Face Detection Functions
+    useEffect(() => {
+      const loadModels = async () => {
+        const MODEL_URL = '/';
+        
+        try {
+          await Promise.all([
+            faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+  
+          ]);
+          
+          setModelsLoaded(true);
+          console.log('Face detection models loaded successfully');
+        } catch (error) {
+          console.error('Error loading face detection models:', error);
+        }
+      };
+
+      loadModels();
+    }, []);
+
+
+      useEffect(() => {
+        if (captureVideo) {
+          startVideo();
+        }
+      }, [captureVideo]);
+      
+
+
+
+    const startVideo = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: videoWidth, height: videoHeight }
+        });
+        let video = videoRef.current;
+        console.log("VideoRef: ", videoRef.current);
+        if (video) {
+          video.srcObject = stream;
+          console.log("Video stream started successfully");
+        }
+        setCaptureVideo(true);
+      } catch (error) {
+        console.error("Error accessing webcam:", error);
+      }
+    };
+
+
+
+  const handleVideoOnPlay = () => {
+    const detectFaces = async () => {
+      if (videoRef.current) {
+        const options = new faceapi.TinyFaceDetectorOptions({
+          inputSize: 160,
+          scoreThreshold: 0.3
+        });
+  
+        try {
+          const detections = await faceapi.detectAllFaces(
+            videoRef.current,
+            options
+          );
+  
+          setHasFace(detections.length > 0);
+          
+          // Log the number of faces detected
+          console.log(`Number of faces detected: ${detections.length}`);
+          
+        } catch (error) {
+          console.error('Face detection error:', error);
+        }
+      }
+    };
+  
+    // Set interval to detect faces and keep the camera active
+    const interval = setInterval(detectFaces, 1000);
+  
+    return () => clearInterval(interval);
+  };
+    
+
+  const closeWebcam = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+    }
+    setCaptureVideo(false);
+    setHasFace(false);
+  };
+  
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)] bg-black overflow-hidden">
       <button 
         onClick={toggleCornerMode}
         className="fixed top-4 left-4 z-10 bg-black border-2 px-6 py-3 rounded-lg font-bold transform transition-transform duration-200 hover:scale-105 active:scale-95 shadow-lg"
-        style={buttonStyle}
       >
-        {alwaysTouchCorners ? "EDGE MODE" : "CORNER MODE"}
+        {!alwaysTouchCorners ? "EDGE MODE" : "CORNER MODE"}
       </button>
-      
+
+      <div className="fixed top-4 right-4 z-10">
+        {captureVideo && modelsLoaded ? (
+          <button 
+            onClick={closeWebcam}
+            className="bg-black border-2 px-6 py-3 rounded-lg font-bold transform transition-transform duration-200 hover:scale-105 active:scale-95 shadow-lg"
+          >
+            Close Webcam
+          </button>
+        ) : (
+          <button 
+          onClick={() => setCaptureVideo(true)}
+          className="bg-black border-2 px-6 py-3 rounded-lg font-bold transform transition-transform duration-200 hover:scale-105 active:scale-95 shadow-lg"
+          style={buttonStyle}
+        >
+          Open Webcam
+        </button>
+        )}
+      </div>
+
+      <div 
+        className="relative w-full flex justify-center items-center"
+        style={{ minHeight: videoHeight }}
+      >
+        {! modelsLoaded ? (
+         
+          <div className="text-white">Loading face detection model...</div>
+        ): ""}
+
+        {
+          !videoRef.current ? (
+            <div className="text-white">Webcam is off</div>
+          ) : ( ""
+          )
+        }
+      </div>
+
+      <video
+          key={captureVideo ? "active" : "inactive"}
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted
+          onPlay={handleVideoOnPlay}
+          width={videoWidth}
+          height={videoHeight}
+          className="rounded-lg fixed bottom-0 right-0 w-96 h-64"
+          />
+
+
+      <div className="text-2xl italic fixed bottom-10 left-4">
+
+       {
+        !alwaysTouchCorners ? " I will not go to the Corners IF your are looking" : "No one's looking ? imma go to a corner"
+       }
+      </div>
+    
+
       <div
         className="absolute"
         style={{
@@ -191,6 +368,8 @@ export default function Home() {
           height: imageHeight,
         }}
       >
+
+
         <Image
           src="/dvd_logo.png"
           alt="DVD Logo"
