@@ -370,7 +370,7 @@ export default function Home() {
       >
 
 
-        <Image
+        <img
           src="/dvd_logo.png"
           alt="DVD Logo"
           width={imageWidth}
