@@ -66,7 +66,7 @@ Screen Saver Activation: The video captures the DVD logo's movement as it bounce
 Return to Normal: Finally, if the application detects a face while the screen saver is active, it seamlessly transitions back to the normal state with the message: "Eyes on me? NO CORNERS FOR YOU!" showcasing the interactive design.
 
 # Additional Demos
-clink this link to open a [demo](useless-screensaver.pages.dev).
+clink this link to open a [demo](https://useless-screensaver.pages.dev/ ).
 
 ## Team Contributions
 - Muhammed Faiz: Designing and documentation.
