@@ -51,17 +51,17 @@ Default
 
 # Diagrams
 ![Workflow](https://github.com/vaishakhsnair/useless_screensaver/blob/main/public/flow%20chart%20diagram.png)
-Start: The flow begins when the screen saver is activated.
-Check for User Presence: The system checks if a user is present using the webcam.
-Decision Point (Is User Detected?):
-Yes Path:
-If a user is detected, the system displays the message: 'Eyes on me? NO CORNERS FOR YOU!'.
-The DVD logo is then programmed to avoid screen corners.
-The process loops back to recheck user presence.
-No Path:
-If no user is detected, the system displays: 'No eyes on me? Time for the corners!'.
-The DVD logo is allowed to move freely toward the screen corners.
-The process loops back to recheck user presence.
+-Start: The flow begins when the screen saver is activated.
+-Check for User Presence: The system checks if a user is present using the webcam.
+-Decision Point (Is User Detected?):
+-Yes Path:
+-If a user is detected, the system displays the message: 'Eyes on me? NO CORNERS FOR YOU!'.
+-The DVD logo is then programmed to avoid screen corners.
+-The process loops back to recheck user presence.
+-No Path:
+-If no user is detected, the system displays: 'No eyes on me? Time for the corners!'.
+-The DVD logo is allowed to move freely toward the screen corners.
+-The process loops back to recheck user presence.
 
 
 ### Project Demo
